@@ -41,7 +41,7 @@ class City_model extends CI_Model{
 	public function updateCity($city){
 		$params = array('name'=>$city['name'],'id !='=>$city['id']);
 		// select query.
-		$this->db-select('id')->from(TABLES::$CITY_TABLE)->where($params);
+		$this->db->select('id')->from(TABLES::$CITY_TABLE)->where($params);
 		//returns the result of select query.
 		$query = $this->db->get();
 		$result = $query->result_array();
@@ -84,7 +84,7 @@ class City_model extends CI_Model{
 	 * @return result_set
 	 */
 	public function getCityById($id){
-		$this->db->select('id,name,fence,status')-from(TABLES::$CITY_TABLE)->where('id',$id);
+		$this->db->select('id,name,fence,status')->from(TABLES::$CITY_TABLE)->where('id',$id);
 		
 		$query = $this->db->get();
 		$result = $query->result_array();

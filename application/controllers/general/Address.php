@@ -59,6 +59,37 @@ class Address extends CI_Controller{
 		
 	}
 	/**
+	 * get the city name by id
+	 * @param  $id
+	 * @access public
+	 * @return city name and id
+	 */
+	public function editcity($id){
+		$this->load->model('general/city_model','city');
+		$data = array();
+		$data['edtcity'] =  $this->city->getCityById($id);
+		$this->load->view('header');
+		$this->load->view('leftnav');
+		$this->load->view('general/editcity',$data);
+		$this->load->view('footer');
+		
+	}
+	/**
+	 * to updtae city name
+	 * @param city name, id
+	 * @access public
+	 * @return the list of updated city name
+	 * @author Pankaj
+	 */
+	public function updatecity(){
+		$params['id'] = $this->input->post('cityid');
+		$params['name'] = $this->input->post('updatecityname');
+		$this->load->model('general/city_model','city');
+		$this->city->updateCity($params);
+		$this->citylist();
+		
+	}
+	/**
 	 * get all zone name on load.
 	 */
 	public function zonelist(){

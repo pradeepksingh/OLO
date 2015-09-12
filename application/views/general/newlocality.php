@@ -33,11 +33,11 @@
 				</div>
 				<div class="form-group">
 					<label>Locality Longitude *</label> <input class="form-control"
-						name="locality" placeholder="Enter locality longitude">
+						name="longitude" placeholder="Enter locality longitude">
 				</div>
 				<div class="form-group">
 					<label>Locality Latidute *</label> <input class="form-control"
-						name="locality" placeholder="Enter locality ">
+						name="latitude" placeholder="Enter locality latitude">
 				</div>
 				<button type="submit" name="savelocality" class="btn btn-default">Submit Button</button>
 			</form>
