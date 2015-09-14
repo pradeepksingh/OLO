@@ -50,9 +50,9 @@
             </div>
             <!-- Top Menu Items -->
             <ul class="nav navbar-nav">
-		        <li class="active"><a href="#">General <span class="sr-only">(current)</span></a></li>
-		        <li><a href="#">Restaurant</a></li>
-		        <li><a href="#">Menu</a></li>
+		        <li class="active"><a href="<?php echo base_url()?>index.php/general/address/">General <span class="sr-only">(current)</span></a></li>
+		        <li><a href="<?php echo base_url()?>index.php/general/address/restaurant">Restaurant</a></li>
+		        <li><a href="<?php echo base_url()?>index.php/general/address/menu">Menu</a></li>
 	        </ul>
             <ul class="nav navbar-right top-nav">
                 <li class="dropdown">

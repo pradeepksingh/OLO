@@ -8,7 +8,20 @@ class Address extends CI_Controller{
 	public function index(){
 		$this->load->view('general');
 	}
-
+    /**
+     * Dashboard for restaurant
+     * @author Pankaj
+     */
+	public function restaurant(){
+		$this->load->view('restaurant');
+	}
+	/**
+	 * Dashboard for menu
+	 * @author Pankaj
+	 */
+	public function menu(){
+		$this->load->view('menu');
+	}
 	/**
 	 *
 	 * get all city name on load.
