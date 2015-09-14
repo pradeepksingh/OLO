@@ -3,6 +3,7 @@ class Address extends CI_Controller{
 	/**
 	 *
 	 * Dashboard
+	 * @author Pankaj
 	 */
 	public function index(){
 		$this->load->view('general');
@@ -11,6 +12,7 @@ class Address extends CI_Controller{
 	/**
 	 *
 	 * get all city name on load.
+	 * @author Pankaj
 	 */
 	public function citylist(){
 		$this->load->model('general/city_model','city');
@@ -24,6 +26,7 @@ class Address extends CI_Controller{
 	}
 	/**
 	 * Show the page for adding new city
+	 * @author Pankaj
 	 */
 	public function newcity(){
 		$this->load->view('header');
@@ -36,6 +39,7 @@ class Address extends CI_Controller{
 	 * @param city name
 	 * @method post
 	 * @return name of city as list
+	 * @author Pankaj
 	 */
 	public function savecity(){
 		
@@ -63,6 +67,7 @@ class Address extends CI_Controller{
 	 * @param  $id
 	 * @access public
 	 * @return city name and id
+	 * @author Pankaj
 	 */
 	public function editcity($id){
 		$this->load->model('general/city_model','city');
@@ -91,6 +96,7 @@ class Address extends CI_Controller{
 	}
 	/**
 	 * get all zone name on load.
+	 * @author Pankaj
 	 */
 	public function zonelist(){
 		$this->load->model('general/zone_model','zone');
@@ -105,6 +111,7 @@ class Address extends CI_Controller{
 	/**
 	 * 
 	 * show the page for adding new zone
+	 * @author Pankaj
 	 */
 	public function newzone(){
 		$this->load->model('general/city_model','city');
@@ -141,7 +148,43 @@ class Address extends CI_Controller{
 		$this->zonelist();
 	}
 	/**
+	 * get the zone name by id
+	 * @param  $id
+	 * @access public
+	 * @return zone name and id
+	 * @author Pankaj
+	 */
+	public function editzone($id){
+		$this->load->model('general/zone_model','zone');
+		$this->load->model('general/city_model','city');
+		$data = array();
+		$data['edtzone'] =  $this->zone->getZoneById($id);
+		$data['cityname'] = $this->city->getAllCities();
+		$this->load->view('header');
+		$this->load->view('leftnav');
+		$this->load->view('general/editzone',$data);
+		$this->load->view('footer');
+	
+	}
+	/**
+	 * to updtae zone name
+	 * @param zone name, id and city_id
+	 * @access public
+	 * @return the list of updated zone name
+	 * @author Pankaj
+	 */
+	public function updatezone(){
+		$params['id'] = $this->input->post('zoneid');
+		$params['city_id'] = $this->input->post('cityid');
+		$params['name'] = $this->input->post('updatezonename');
+		$this->load->model('general/zone_model','zone');
+		$this->zone->updateZone($params);
+		$this->zonelist();
+	
+	}
+	/**
 	 * get all locality name on load.
+	 * @author Pankaj
 	 */
 	public function localitylist(){
 		$this->load->model('general/locality_model','locality');
@@ -157,6 +200,7 @@ class Address extends CI_Controller{
 	/**
 	 * 
 	 * adding new locality.
+	 * @author Pankaj
 	 */
 	public function newlocality(){
 		$this->load->model('general/zone_model','zone');
@@ -194,6 +238,42 @@ class Address extends CI_Controller{
 		if(isset($savelocality)){
 			$this->locality->addLocality($params);
 		}
+		$this->localitylist();
+	}
+	/**
+	 * get the locality name by id
+	 * @param  $id
+	 * @access public
+	 * @return locality name,latitude,longitude and id
+	 * @author Pankaj
+	 */
+	public function editlocality($id){
+		$this->load->model('general/locality_model','locality');
+		$this->load->model('general/zone_model','zone');
+		$data = array();
+		$data['edtlocality'] =  $this->locality->getLocalityById($id);
+		$data['zonename'] = $this->zone->getAllZones();
+		$this->load->view('header');
+		$this->load->view('leftnav');
+		$this->load->view('general/editlocality',$data);
+		$this->load->view('footer');
+	
+	}
+	/**
+	 * to updtae locality name
+	 * @param locality name, latitude, longitude, id and zone_id
+	 * @access public
+	 * @return the list of updated locality name
+	 * @author Pankaj
+	 */
+	public function updatelocality(){
+		$params['id'] = $this->input->post('localityid');
+		$params['zone_id'] = $this->input->post('zoneid');
+		$params['name'] = $this->input->post('updatelocalityname');
+		$params['latitude'] = $this->input->post('updatelatitude');
+		$params['longitude'] = $this->input->post('updatelongitude');
+		$this->load->model('general/locality_model','locality');
+		$this->locality->updateLocality($params);
 		$this->localitylist();
 	}
 }

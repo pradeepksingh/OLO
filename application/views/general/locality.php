@@ -42,7 +42,7 @@
 								</td>
 								<td><?php echo $item['status'];?>
 								</td>
-								<td><a href = "<?php echo $item['id'];?>" class="btn btn-success icon-btn"><i class="fa fa-pencil"></i></a></td>
+									<td><a href = "<?php echo base_url();?>index.php/general/address/editlocality/<?php echo $item['id']?>" class="btn btn-success icon-btn"><i class="fa fa-pencil"></i></a></td>
 							</tr>
 							<?php endforeach;?>
 						</tbody>
