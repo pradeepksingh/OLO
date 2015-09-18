@@ -16,7 +16,24 @@ class Locality_model extends CI_Model{
 	 */
 	//adding locality to db.
 	public function addLocality($locality){
-		$this->db->insert(TABLES::$LOCALITY_TABLE,$locality);
+		$params = array('name'=>$locality['name'],'id !='=>$locality['id']);
+		// select query.
+		$this->db->select('id')->from(TABLES::$LOCALITY_TABLE)->where($params);
+		//returns the result of select query.
+		$query = $this->db->get();
+		$result = $query->result_array();
+		if(count($result) <= 0){
+			$this->db->insert(TABLES::$LOCALITY_TABLE,$locality);
+			$data['status'] = 1;
+			$data['message']="added successfully";
+			return  $data;
+		}
+		else{
+			$errors['zone'] = "Locality name already exists.";
+			$data['status']=0;
+			$data['message']=$errors;
+			return $data;
+		}
 	}
 	//deleting city from db.
 	/*public function deleteCity($id){
@@ -33,6 +50,7 @@ class Locality_model extends CI_Model{
 	 * @throws Exception
 	 */
 	public function updateLocality($locality){
+		$data = array();
 		$params = array('name'=>$locality['name'],'id !='=>$locality['id']);
 		// select query.
 		$this->db->select('id')->from(TABLES::$LOCALITY_TABLE)->where($params);
@@ -42,8 +60,14 @@ class Locality_model extends CI_Model{
 		if(count($result) <= 0){
 			$this->db->where('id',$locality['id']);
 			$this->db->update(TABLES::$LOCALITY_TABLE, $locality);
+			$data['status']=1;
+			$data['message']="updated successfully";
+			return  $data;
 		}else{
-			throw new Exception("Locality name already exists.");
+			$errors['locality'] = "Locality name already exists.";
+			$data['status']=0;
+			$data['message']=$errors;
+			return  $data;
 		}
 		
 	}
@@ -79,7 +103,7 @@ class Locality_model extends CI_Model{
 	 * @return result_set
 	 */
 	public function getLocalityById($id){
-		$this->db->select('id,name,latitude,longitude,status')->from(TABLES::$LOCALITY_TABLE)->where('id',$id);
+		$this->db->select('id,zone_id,name,latitude,longitude,status')->from(TABLES::$LOCALITY_TABLE)->where('id',$id);
 		
 		$query = $this->db->get();
 		$result = $query->result_array();

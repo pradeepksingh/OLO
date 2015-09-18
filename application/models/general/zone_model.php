@@ -16,7 +16,25 @@ class Zone_model extends CI_Model{
 	 */
 	//adding zone to db.
 	public function addZone($zone){
-		$this->db->insert(TABLES::$ZONE_TABLE,$zone);
+		$data = array();
+		$params = array('name'=>$zone['name']);
+		// select query.
+		$this->db->select('id')->from(TABLES::$ZONE_TABLE)->where($params);
+		//returns the result of select query.
+		$query = $this->db->get();
+		$result = $query->result_array();
+		if(count($result) <= 0){
+			$this->db->insert(TABLES::$ZONE_TABLE,$zone);
+			$data['status'] = 1;
+			$data['message']="added successfully";
+			return  $data;
+		}else{
+			$errors['zone'] = "Zone name already exists.";
+			$data['status']=0;
+			$data['message']=$errors;
+			return $data;
+		}
+		
 	}
 	//deleting city from db.
 	/*public function deleteCity($id){
@@ -33,6 +51,7 @@ class Zone_model extends CI_Model{
 	 * @throws Exception
 	 */
 	public function updateZone($zone){
+		$data = array();
 		$params = array('name'=>$zone['name'],'id !='=>$zone['id']);
 		// select query.
 		$this->db->select('id')->from(TABLES::$ZONE_TABLE)->where($params);
@@ -42,8 +61,14 @@ class Zone_model extends CI_Model{
 		if(count($result) <= 0){
 			$this->db->where('id',$zone['id']);
 			$this->db->update(TABLES::$ZONE_TABLE, $zone);
+			$data['status']=1;
+			$data['message']="updated successfully";
+			return  $data;
 		}else{
-			throw new Exception("Zone name already exists.");
+			$errors['zone'] = "Zone name already exists.";
+			$data['status']=0;
+			$data['message']=$errors;
+			return  $data;
 		}
 		
 	}
@@ -79,7 +104,7 @@ class Zone_model extends CI_Model{
 	 * @return result_set
 	 */
 	public function getZoneById($id){
-		$this->db->select('id,name,fence,status')->from(TABLES::$ZONE_TABLE)->where('id',$id);
+		$this->db->select('id,city_id,name,fence,status')->from(TABLES::$ZONE_TABLE)->where('id',$id);
 		
 		$query = $this->db->get();
 		$result = $query->result_array();

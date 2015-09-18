@@ -22,7 +22,25 @@ class City_model extends CI_Model{
 	 */
 	//adding city to db.
 	public function addCity($city){
-		$this->db->insert(TABLES::$CITY_TABLE,$city);
+		$data = array();
+		
+		$params = array('name'=>$city['name']);
+		// select query.
+		$this->db->select('id')->from(TABLES::$CITY_TABLE)->where($params);
+		//returns the result of select query.
+		$query = $this->db->get();
+		$result = $query->result_array();
+		if(count($result) <= 0){
+			$this->db->insert(TABLES::$CITY_TABLE,$city);
+			$data['status']=1;
+			$data['message']="added successfully";
+			return  $data;
+		}else{
+			$errors['city'] = "City name already exists.";
+			$data['status']=0;
+			$data['message']=$errors;
+			return  $data;
+		}
 	}
 	//deleting city from db.
 	/*public function deleteCity($id){
@@ -36,9 +54,10 @@ class City_model extends CI_Model{
 	 * update city name
 	 * @param  city object
 	 * @access public
-	 * @throws Exception
+	 * @return array
 	 */
 	public function updateCity($city){
+		$data = array();
 		$params = array('name'=>$city['name'],'id !='=>$city['id']);
 		// select query.
 		$this->db->select('id')->from(TABLES::$CITY_TABLE)->where($params);
@@ -48,8 +67,14 @@ class City_model extends CI_Model{
 		if(count($result) <= 0){
 			$this->db->where('id',$city['id']);
 			$this->db->update(TABLES::$CITY_TABLE, $city);
+			$data['status']=1;
+			$data['message']="updated successfully";
+			return  $data;
 		}else{
-			throw new Exception("City name already exists.");
+				$errors['city'] = "City name already exists.";
+			$data['status']=0;
+			$data['message']=$errors;
+			return  $data;
 		}
 		
 	}

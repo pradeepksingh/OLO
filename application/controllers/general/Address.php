@@ -6,7 +6,11 @@ class Address extends CI_Controller{
 	 * @author Pankaj
 	 */
 	public function index(){
-		$this->load->view('general');
+		$this->load->view('header');
+		$this->load->view('leftnav');
+		$this->load->view('navbar');
+		$this->load->view('footer');
+		//$this->load->view('general');
 	}
     /**
      * Dashboard for restaurant
@@ -58,23 +62,37 @@ class Address extends CI_Controller{
 		
 		$this->load->model('general/city_model','city');
 		
-		$city = NULL;
-		//$fence = NULL;
+		$this->load->helpers(array('form_helper', 'url_helper'));
+		
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('city', 'city', 'required');
 		$status = 1;
-		$submit = NULL;
+		$data = array();
 		
-		extract($_POST);
-		
-		$param['name'] = $city;
-		//$param['fence'] = $fence;
+		$param['name'] = $this->input->post('city'); 
 		$param['status'] = $status;
-		if(isset($submit))
+		if ($this->form_validation->run() == FALSE)
 		{
-			$this->city->addCity($param);
+			$errors['city'] = strip_tags(form_error("city"));
+			$data['status'] = 0;
+			$data['message'] = $errors;
+		    echo json_encode($data);
+		    
+		} else {
+			$data = $this->city->addCity($param);
+			echo json_encode($data);
 		}
-		 $this->citylist();
-		
 	}
+// 	public function form_error($city){
+// 		if($city == ''){
+// 		$this->form_validation->set_message('username_check', 'The {field} field can not be blank');
+//                         return FALSE;
+//                 }
+//                 else
+//                 {
+//                         return TRUE;
+//                 }
+// 	}
 	/**
 	 * get the city name by id
 	 * @param  $id
@@ -102,9 +120,26 @@ class Address extends CI_Controller{
 	public function updatecity(){
 		$params['id'] = $this->input->post('cityid');
 		$params['name'] = $this->input->post('updatecityname');
+		
+		$this->load->helpers(array('form_helper', 'url_helper'));
+		
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('updatecityname', 'city', 'required');
+		
 		$this->load->model('general/city_model','city');
-		$this->city->updateCity($params);
-		$this->citylist();
+		
+		if ($this->form_validation->run() == FALSE)
+		{
+			$errors['city'] = "The city field is required.";
+			$data['status'] = 0;
+			$data['message'] = $errors;
+			echo json_encode($data);
+		
+		} else {
+		
+		echo json_encode($this->city->updateCity($params));
+		//$this->citylist();
+		}
 		
 	}
 	/**
@@ -145,20 +180,39 @@ class Address extends CI_Controller{
 	 */
 	public function savezone(){
 		$this->load->model('general/zone_model','zone');
-		$id = NULL;
-		$name = NULL;
+	
 		$status = 1;
-		$savezone = NULL;
+		$data = array();
 		
-		extract($_POST);
 		
-		$params['city_id'] = $id;
-		$params['name'] = $name;
+		$this->load->helpers(array('form_helper', 'url_helper'));
+		
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('zonename', 'zone', 'required');
+		$this->form_validation->set_rules('cityid','city','required');
+		
+		
+		$params['city_id'] = $this->input->post('cityid');
+		$params['name'] = $this->input->post('zonename');
 		$params['status'] = $status;
-		if(isset($savezone)){
-			$this->zone->addZone($params);
-		}
-		$this->zonelist();
+		
+		if ($this->form_validation->run() == FALSE)
+		{
+			if($params['city_id'] == "" && $params['name'] == ""){
+				$errors['city'] = "Please select city.";
+				$errors['zone'] = "The zone field is required.";
+			}
+			if($params['city_id'] == "")
+				$errors['city'] = "Please select city.";
+			elseif($params['name'] == "")
+				$errors['zone'] = "The zone field is required.";
+			$data['status'] = 0;
+			$data['message'] = $errors;
+			echo json_encode($data);
+		
+		}else
+			echo json_encode($this->zone->addZone($params));
+		
 	}
 	/**
 	 * get the zone name by id
@@ -191,8 +245,35 @@ class Address extends CI_Controller{
 		$params['city_id'] = $this->input->post('cityid');
 		$params['name'] = $this->input->post('updatezonename');
 		$this->load->model('general/zone_model','zone');
-		$this->zone->updateZone($params);
-		$this->zonelist();
+		
+		$data = array();
+		
+		
+		$this->load->helpers(array('form_helper', 'url_helper'));
+		
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('updatezonename', 'zone', 'required');
+		$this->form_validation->set_rules('cityid','city','required');
+		
+		if ($this->form_validation->run() == FALSE)
+		{
+			if($params['city_id'] == "" && $params['name'] == ""){
+				$errors['city'] = "Please select city.";
+				$errors['zone'] = "The zone field is required.";
+			}
+			if($params['city_id'] == "")
+				$errors['city'] = "Please select city.";
+			elseif($params['name'] == "")
+			$errors['zone'] = "The zone field is required.";
+			$data['status'] = 0;
+			$data['message'] = $errors;
+			echo json_encode($data);
+		
+		}else
+			echo json_encode($this->zone->updateZone($params));
+		
+		//$this->zone->updateZone($params);
+		//$this->zonelist();
 	
 	}
 	/**
@@ -234,24 +315,99 @@ class Address extends CI_Controller{
 	 */
 	public function savelocality(){
 		$this->load->model('general/locality_model','locality');
-		$id = NULL;
-		$locality = NULL;
+		
 		$status = 1;
-		$longitude = NULL;
-		$latitude = NULL;
-		$savelocality = NULL;
 		
-		extract($_POST);
+		$data = array();
 		
-		$params['zone_id'] = $id;
-		$params['name'] = $locality;
+		
+		$params['zone_id'] = $this->input->post('zoneid');
+		$params['name'] = $this->input->post('locality');
 		$params['status'] = $status;
-		$params['latitude'] = $latitude;
-		$params['longitude'] = $longitude;
-		if(isset($savelocality)){
-			$this->locality->addLocality($params);
+		$params['latitude'] = $this->input->post('latitude');
+		$params['longitude'] = $this->input->post('longitude');
+		
+		$this->load->helpers(array('form_helper', 'url_helper'));
+		
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('locality', 'locality', 'required');
+		$this->form_validation->set_rules('latitude', 'latitude', 'required');
+		$this->form_validation->set_rules('longitude', 'longitude', 'required');
+		$this->form_validation->set_rules('zoneid','zone','required');
+		
+		if ($this->form_validation->run() == FALSE)
+		{
+			if($params['zone_id'] == "" && $params['name'] == "" && $params['latitude'] == "" && $params['longitude'] == "" ){
+				$errors['zone'] = "Please select zone";
+			$errors['locality'] = strip_tags(form_error("locality"));
+			$errors['latitude'] = strip_tags(form_error("latitude"));
+			$errors['longitude'] = strip_tags(form_error("longitude"));
+			}
+			if( $params['name'] == "" && $params['latitude'] == "" && $params['longitude'] == "" ){
+				$errors['locality'] = strip_tags(form_error("locality"));
+				$errors['latitude'] = strip_tags(form_error("latitude"));
+				$errors['longitude'] = strip_tags(form_error("longitude"));
+			}
+			if($params['zone_id'] == ""  && $params['latitude'] == "" && $params['longitude'] == "" ){
+				$errors['zone'] = "Please select zone";
+				$errors['latitude'] = strip_tags(form_error("latitude"));
+				$errors['longitude'] = strip_tags(form_error("longitude"));
+			}
+			if($params['zone_id'] == "" && $params['name'] == "" && $params['longitude'] == "" ){
+				$errors['zone'] = "Please select zone";
+				$errors['locality'] = strip_tags(form_error("locality"));
+				$errors['longitude'] = strip_tags(form_error("longitude"));
+			}
+			if($params['zone_id'] == "" && $params['name'] == "" && $params['latitude'] == "" ){
+				$errors['zone'] = "Please select zone";
+				$errors['locality'] = strip_tags(form_error("locality"));
+				$errors['latitude'] = strip_tags(form_error("latitude"));
+			}
+			if($params['zone_id'] == "" && $params['name'] == "" ){
+				$errors['zone'] = "Please select zone";
+				$errors['locality'] = strip_tags(form_error("locality"));
+			}
+			if($params['zone_id'] == ""  && $params['longitude'] == "" ){
+				$errors['zone'] = "Please select zone";
+				$errors['longitude'] = strip_tags(form_error("longitude"));
+			}
+			if($params['zone_id'] == "" && $params['latitude'] == "" ){
+				$errors['zone'] = "Please select zone";
+				$errors['latitude'] = strip_tags(form_error("latitude"));
+			}
+			if( $params['name'] == "" && $params['latitude'] == ""){
+				$errors['locality'] = strip_tags(form_error("locality"));
+				$errors['latitude'] = strip_tags(form_error("latitude"));
+			}
+			if( $params['name'] == "" && $params['longitude'] == "" ){
+				$errors['locality'] = strip_tags(form_error("locality"));
+				$errors['longitude'] = strip_tags(form_error("longitude"));
+			}
+			if( $params['latitude'] == "" && $params['longitude'] == "" ){
+				$errors['latitude'] = strip_tags(form_error("latitude"));
+				$errors['longitude'] = strip_tags(form_error("longitude"));
+			}
+			if($params['zone_id'] == ""){
+				$errors['zone'] = "Please select zone";
+			}
+			if( $params['name'] == "" ){
+				$errors['locality'] = strip_tags(form_error("locality"));
+			}
+			if( $params['latitude'] == "" ){
+				$errors['latitude'] = strip_tags(form_error("latitude"));
+			}
+			if( $params['longitude'] == "" ){
+				$errors['longitude'] = strip_tags(form_error("longitude"));
+			}
+			$data['status'] = 0;
+			$data['message'] = $errors;
+			echo json_encode($data);
+		
+		} else {
+			echo json_encode($this->locality->addLocality($params));
 		}
-		$this->localitylist();
+		
+		//$this->localitylist();
 	}
 	/**
 	 * get the locality name by id
@@ -266,6 +422,7 @@ class Address extends CI_Controller{
 		$data = array();
 		$data['edtlocality'] =  $this->locality->getLocalityById($id);
 		$data['zonename'] = $this->zone->getAllZones();
+		
 		$this->load->view('header');
 		$this->load->view('leftnav');
 		$this->load->view('general/editlocality',$data);
@@ -285,9 +442,89 @@ class Address extends CI_Controller{
 		$params['name'] = $this->input->post('updatelocalityname');
 		$params['latitude'] = $this->input->post('updatelatitude');
 		$params['longitude'] = $this->input->post('updatelongitude');
+		
+		
 		$this->load->model('general/locality_model','locality');
-		$this->locality->updateLocality($params);
-		$this->localitylist();
+		$this->load->helpers(array('form_helper', 'url_helper'));
+		
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('updatelocalityname', 'locality', 'required');
+		$this->form_validation->set_rules('updatelatitude', 'latitude', 'required');
+		$this->form_validation->set_rules('updatelongitude', 'longitude', 'required');
+		$this->form_validation->set_rules('zoneid','zone','required');
+		
+		if ($this->form_validation->run() == FALSE)
+		{
+			if($params['zone_id'] == "" && $params['name'] == "" && $params['latitude'] == "" && $params['longitude'] == "" ){
+				$errors['zone'] = "Please select zone";
+				$errors['locality'] = strip_tags(form_error("updatelocalityname"));
+				$errors['latitude'] = strip_tags(form_error("updatelatitude"));
+				$errors['longitude'] = strip_tags(form_error("updatelongitude"));
+			}
+			if( $params['name'] == "" && $params['latitude'] == "" && $params['longitude'] == "" ){
+				$errors['locality'] = strip_tags(form_error("updatelocalityname"));
+				$errors['latitude'] = strip_tags(form_error("updatelatitude"));
+				$errors['longitude'] = strip_tags(form_error("updatelongitude"));
+			}
+			if($params['zone_id'] == ""  && $params['latitude'] == "" && $params['longitude'] == "" ){
+				$errors['zone'] = "Please select zone";
+				$errors['latitude'] = strip_tags(form_error("updatelatitude"));
+				$errors['longitude'] = strip_tags(form_error("updatelongitude"));
+			}
+			if($params['zone_id'] == "" && $params['name'] == "" && $params['longitude'] == "" ){
+				$errors['zone'] = "Please select zone";
+				$errors['locality'] = strip_tags(form_error("updatelocalityname"));
+				$errors['longitude'] = strip_tags(form_error("updatelongitude"));
+			}
+			if($params['zone_id'] == "" && $params['name'] == "" && $params['latitude'] == "" ){
+				$errors['zone'] = "Please select zone";
+				$errors['locality'] = strip_tags(form_error("updatelocalityname"));
+				$errors['latitude'] = strip_tags(form_error("updatelatitude"));
+			}
+			if($params['zone_id'] == "" && $params['name'] == "" ){
+				$errors['zone'] = "Please select zone";
+				$errors['locality'] = strip_tags(form_error("updatelocalityname"));
+			}
+			if($params['zone_id'] == ""  && $params['longitude'] == "" ){
+				$errors['zone'] = "Please select zone";
+				$errors['longitude'] = strip_tags(form_error("updatelongitude"));
+			}
+			if($params['zone_id'] == "" && $params['latitude'] == "" ){
+				$errors['zone'] = "Please select zone";
+				$errors['latitude'] = strip_tags(form_error("updatelatitude"));
+			}
+			if( $params['name'] == "" && $params['latitude'] == ""){
+				$errors['locality'] = strip_tags(form_error("updatelocalityname"));
+				$errors['latitude'] = strip_tags(form_error("updatelatitude"));
+			}
+			if( $params['name'] == "" && $params['longitude'] == "" ){
+				$errors['locality'] = strip_tags(form_error("updatelocalityname"));
+				$errors['longitude'] = strip_tags(form_error("updatelongitude"));
+			}
+			if( $params['latitude'] == "" && $params['longitude'] == "" ){
+				$errors['latitude'] = strip_tags(form_error("updatelatitude"));
+				$errors['longitude'] = strip_tags(form_error("updatelongitude"));
+			}
+			if($params['zone_id'] == ""){
+				$errors['zone'] = "Please select zone";
+			}
+			if( $params['name'] == "" ){
+				$errors['locality'] = strip_tags(form_error("updatelocalityname"));
+			}
+			if( $params['latitude'] == "" ){
+				$errors['latitude'] = strip_tags(form_error("updatelatitude"));
+			}
+			if( $params['longitude'] == "" ){
+				$errors['longitude'] = strip_tags(form_error("updatelongitude"));
+			}
+			$data['status'] = 0;
+			$data['message'] = $errors;
+			echo json_encode($data);
+		
+		} else {
+		
+		echo json_encode($this->locality->updateLocality($params));
+		}
 	}
 }
 
