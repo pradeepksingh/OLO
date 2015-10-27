@@ -14,6 +14,9 @@
                         <a href="<?php echo base_url()?>index.php/general/address/localitylist"><i class="fa fa-fw fa-edit"></i> Locality</a>
                     </li>
                     <li>
+                        <a href="<?php echo base_url()?>index.php/general/address/categorylist"><i class="fa fa-fw fa-edit"></i>Category</a>
+                    </li>
+                    <li>
                         <a href="bootstrap-elements.html"><i class="fa fa-fw fa-desktop"></i> Bootstrap Elements</a>
                     </li>
                     <li>

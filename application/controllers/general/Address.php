@@ -526,6 +526,113 @@ class Address extends CI_Controller{
 		echo json_encode($this->locality->updateLocality($params));
 		}
 	}
+	
+	/**
+	 *
+	 * get all categories name on load.
+	 * @author Pankaj
+	 */
+	public function categorylist(){
+		$this->load->model('general/category_model','category');
+		$result = $this->category->getAllCategories();
+		$data = array();
+		$data['categories'] = $result;
+		$this->load->view('header');
+		$this->load->view('leftnav');
+		$this->load->view('general/category',$data);
+		$this->load->view('footer');
+	}
+	/**
+	 * Show the page for adding new category
+	 * @author Pankaj
+	 */
+	public function newcategory(){
+		$this->load->view('header');
+		$this->load->view('leftnav');
+		$this->load->view('general/newcategory');
+		$this->load->view('footer');
+	}
+	/**
+	 * Saving the category name entered by user
+	 * @param category name
+	 * @method post
+	 * @return name of category as list
+	 * @author Pankaj
+	 */
+	public function savecategory(){
+	
+		$this->load->model('general/category_model','category');
+	
+		$this->load->helpers(array('form_helper', 'url_helper'));
+	
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('category', 'category', 'required');
+		$status = 1;
+		$data = array();
+	
+		$param['name'] = $this->input->post('category');
+		$param['status'] = $status;
+		if ($this->form_validation->run() == FALSE)
+		{
+			$errors['category'] = strip_tags(form_error("category"));
+			$data['status'] = 0;
+			$data['message'] = $errors;
+			echo json_encode($data);
+	
+		} else {
+			$data = $this->category->addCategory($param);
+			echo json_encode($data);
+		}
+	}
+	/**
+	 * get the category name by id
+	 * @param  $id
+	 * @access public
+	 * @return category name and id
+	 * @author Pankaj
+	 */
+	public function editcategory($id){
+		$this->load->model('general/category_model','category');
+		$data = array();
+		$data['edtcategory'] =  $this->category->getCategoryById($id);
+		$this->load->view('header');
+		$this->load->view('leftnav');
+		$this->load->view('general/editcategory',$data);
+		$this->load->view('footer');
+	
+	}
+	/**
+	 * to updtae category name
+	 * @param category name, id
+	 * @access public
+	 * @return the list of updated category name
+	 * @author Pankaj
+	 */
+	public function updatecategory(){
+		$params['id'] = $this->input->post('categoryid');
+		$params['name'] = $this->input->post('updatecategoryname');
+	
+		$this->load->helpers(array('form_helper', 'url_helper'));
+	
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('updatecategoryname', 'category', 'required');
+	
+		$this->load->model('general/category_model','category');
+	
+		if ($this->form_validation->run() == FALSE)
+		{
+			$errors['category'] = "The category field is required.";
+			$data['status'] = 0;
+			$data['message'] = $errors;
+			echo json_encode($data);
+	
+		} else {
+	
+			echo json_encode($this->category->updateCategory($params));
+			//$this->citylist();
+		}
+	
+	}
 }
 
 ?>
