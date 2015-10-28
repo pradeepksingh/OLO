@@ -16,6 +16,9 @@
                     <li>
                         <a href="<?php echo base_url()?>index.php/general/address/categorylist"><i class="fa fa-fw fa-edit"></i>Category</a>
                     </li>
+                     <li>
+                        <a href="<?php echo base_url()?>index.php/general/address/menuitemlist"><i class="fa fa-fw fa-edit"></i>Menu Item</a>
+                    </li>
                     <li>
                         <a href="bootstrap-elements.html"><i class="fa fa-fw fa-desktop"></i> Bootstrap Elements</a>
                     </li>

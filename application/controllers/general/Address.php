@@ -633,6 +633,160 @@ class Address extends CI_Controller{
 		}
 	
 	}
+	
+	/**
+	 * get all menu item name on load.
+	 * @author Pankaj
+	 */
+	public function menuitemlist(){
+		$this->load->model('general/menu_item_model','menuitem');
+		$result = $this->menuitem->getAllMenuItems();
+		$data = array();
+		$data['menuitems'] = $result;
+		$this->load->view('header');
+		$this->load->view('leftnav');
+		$this->load->view('general/menuitem',$data);
+		$this->load->view('footer');
+	}
+	/**
+	 *
+	 * show the page for adding new menu item
+	 * @author Pankaj
+	 */
+	public function newmenuitem(){
+		$this->load->model('general/category_model','category');
+		$drop = $this->category->getAllCategories();
+		$data = array();
+		$data['categorydrop'] = $drop;
+		$this->load->view('header');
+		$this->load->view('leftnav');
+		$this->load->view('general/newmenuitem',$data);
+		$this->load->view('footer');
+	}
+	/**
+	 * saving the menu item name
+	 * @param category id and menu item name
+	 * @return void
+	 * @access public
+	 * @author Pankaj
+	 */
+	public function savemenuitem(){
+		$this->load->model('general/menu_item_model','menuitem');
+	
+		$status = 1;
+		$data = array();
+	
+	
+		$this->load->helpers(array('form_helper', 'url_helper'));
+	
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('menuitemname', 'menu item', 'required');
+		$this->form_validation->set_rules('category-name','category','required');
+		$this->form_validation->set_rules('price','price','required');
+	
+		$params['catid'] = $this->input->post('category-name');
+		$params['name'] = $this->input->post('menuitemname');
+		$params['price'] = $this->input->post('price');
+		$params['due'] = $this->input->post('due');
+		$params['status'] = $status;
+	
+		if ($this->form_validation->run() == FALSE)
+		{
+			if($params['catid'] == "" && $params['name'] == "" && $params['price'] == ""){
+				$errors['category'] = "Please select category.";
+				$errors['menuitem'] = "The menu item field is required.";
+				$errors['price'] = "Please enter the price for the menu item";
+			}
+			if($params['catid'] == "" && $params['name'] == ""){
+				$errors['category'] = "Please select category.";
+				$errors['menuitem'] = "The menu item field is required.";
+			}
+			if($params['catid'] == "" && $params['price'] == ""){
+				$errors['category'] = "Please select category.";
+				$errors['price'] = "Please enter the price for the menu item";
+			}
+			if( $params['name'] == "" && $params['price'] == ""){
+				$errors['menuitem'] = "The menu item field is required.";
+				$errors['price'] = "Please enter the price for the menu item";
+			}
+			if($params['catid'] == "")
+				$errors['category'] = "Please select category.";
+			if($params['name'] == "")
+				$errors['menuitem'] = "The menu item field is required.";
+			elseif($params['price'] == "")
+				$errors['price'] = "Please enter the price for the menu item";
+			$data['status'] = 0;
+			$data['message'] = $errors;
+			echo json_encode($data);
+	
+		}else
+			echo json_encode($this->menuitem->addMenuItem($params));
+	
+	}
+	/**
+	 * get the menu item name by id
+	 * @param  $id
+	 * @access public
+	 * @return menu item name and id
+	 * @author Pankaj
+	 */
+	public function editmenuitem($id){
+		$this->load->model('general/menu_item_model','menuitem');
+		$this->load->model('general/category_model','category');
+		$data = array();
+		$data['edtmenuitem'] =  $this->menuitem->getMenuItemById($id);
+		$data['categoryname'] = $this->category->getAllCategories();
+		$this->load->view('header');
+		$this->load->view('leftnav');
+		$this->load->view('general/editmenuitem',$data);
+		$this->load->view('footer');
+	
+	}
+	/**
+	 * to updtae menu item name
+	 * @param menu item name, id and categoryid
+	 * @access public
+	 * @return the list of updated menu item name
+	 * @author Pankaj
+	 */
+	public function updatemenuitem(){
+		$params['id'] = $this->input->post('menuitemid');
+		$params['catid'] = $this->input->post('updatecategoryid');
+		$params['name'] = $this->input->post('updatemenuitemname');
+		$params['price'] = $this->input->post('updatemenuitemprice');
+		$params['due'] = $this->input->post('updatemenuitemdue');
+		$this->load->model('general/menu_item_model','menuitem');
+		$data = array();
+	
+	
+		$this->load->helpers(array('form_helper', 'url_helper'));
+	
+		$this->load->library('form_validation');
+		$this->form_validation->set_rules('updatemenuitemname', 'menu item', 'required');
+		$this->form_validation->set_rules('updatecategoryid','category','required');
+		$this->form_validation->set_rules('updatemenuitemprice','price','required');
+		
+		if ($this->form_validation->run() == FALSE)
+		{
+			if($params['catid'] == "" && $params['name'] == ""){
+				$errors['category'] = "Please select category.";
+				$errors['menuitem'] = "The menu item field is required.";
+			}
+			if($params['catid'] == "")
+				$errors['category'] = "Please select category.";
+			elseif($params['name'] == "")
+			$errors['menuitem'] = "The menu item field is required.";
+			$data['status'] = 0;
+			$data['message'] = $errors;
+			echo json_encode($data);
+	
+		}else
+			echo json_encode($this->menuitem->updateMenuItem($params));
+	
+		//$this->zone->updateZone($params);
+		//$this->zonelist();
+	
+	}
 }
 
 ?>
